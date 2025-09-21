@@ -1,0 +1,6 @@
+@PRN222_TrackingTool.API_HostAddress = http://localhost:5063
+
+GET {{PRN222_TrackingTool.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
