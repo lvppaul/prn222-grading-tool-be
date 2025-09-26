@@ -17,7 +17,7 @@ namespace PRN222_TrackingTool.API.Controllers
             _userService = userService;
         }
 
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Examiner")]
         [HttpGet("pagination")]
         public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {

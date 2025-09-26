@@ -21,7 +21,5 @@ namespace PRN222_TrackingTool.BusinessLayer.DTOs.Request
 
         [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; } = string.Empty;
-        [Required(ErrorMessage = "Role is required")]
-        public int RoleId { get; set; }
     }
 }

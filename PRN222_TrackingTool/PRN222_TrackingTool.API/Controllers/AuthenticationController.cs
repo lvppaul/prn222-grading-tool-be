@@ -61,6 +61,30 @@ namespace PRN222_TrackingTool.API.Controllers
                 return BadRequest(response);
             }
         }
+
+        [HttpPost("refreshToken")]
+        public async Task<IActionResult> RefreshTokenAsync(RefreshTokenRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.RefreshToken))
+            {
+                return BadRequest(new { Success = false, message = "Refresh token is required" });
+            }
+
+            var result = await _authenticationService.RefreshTokenAsync(request.RefreshToken);
+
+            if (result == null)
+            {
+                return StatusCode(500, new { Success = false, message = "Internal server error" });
+            }
+
+            if (!result.Success)
+            {
+                return BadRequest(new { Success = false, message = result.Message });
+            }
+
+            return Ok(result);
+        }
+
         [HttpPost("logout")]
         public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
         {

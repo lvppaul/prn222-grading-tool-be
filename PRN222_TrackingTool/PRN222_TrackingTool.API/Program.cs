@@ -4,6 +4,8 @@ using Microsoft.OpenApi.Models;
 using PRN222_TrackingTool.BusinessLayer.Interfaces;
 using PRN222_TrackingTool.BusinessLayer.Services;
 using PRN222_TrackingTool.DataAccessLayer.Context;
+using PRN222_TrackingTool.DataAccessLayer.Interfaces;
+using PRN222_TrackingTool.DataAccessLayer.Repositories;
 using PRN222_TrackingTool.DataAccessLayer.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
