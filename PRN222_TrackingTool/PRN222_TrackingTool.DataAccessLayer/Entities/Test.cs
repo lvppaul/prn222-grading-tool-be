@@ -23,13 +23,10 @@ public partial class Test
 
     public bool? IsDeleted { get; set; }
 
-    public double? Score { get; set; }
-
     public virtual Exam? Exam { get; set; }
 
-    public virtual ICollection<LecturersTestsDetail> LecturersTestsDetails { get; set; } = new List<LecturersTestsDetail>();
+    public virtual ICollection<LecturerStudentAssignment> LecturerStudentAssignments { get; set; } = new List<LecturerStudentAssignment>();
 
-    public virtual User? Student { get; set; }
+    public virtual Students? Student { get; set; }
 
-    public virtual ICollection<TestsScore> TestsScores { get; set; } = new List<TestsScore>();
 }
