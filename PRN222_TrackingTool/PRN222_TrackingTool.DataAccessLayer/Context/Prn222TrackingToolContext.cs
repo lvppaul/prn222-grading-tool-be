@@ -18,18 +18,19 @@ public partial class Prn222TrackingToolContext : DbContext
 
     public virtual DbSet<Exam> Exams { get; set; }
 
-    public virtual DbSet<LecturersTestsDetail> LecturersTestsDetails { get; set; }
-
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<Test> Tests { get; set; }
 
-    public virtual DbSet<TestsScore> TestsScores { get; set; }
-
     public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<Students> Students { get; set; }
+
+    public virtual DbSet<LecturerStudentAssignment> LecturerStudentAssignments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Exam>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Exams__3213E83FF9197BD1");
@@ -59,28 +60,49 @@ public partial class Prn222TrackingToolContext : DbContext
                 .HasConstraintName("FK__Exams__examiner___412EB0B6");
         });
 
-        modelBuilder.Entity<LecturersTestsDetail>(entity =>
-        {
-            entity.HasKey(e => new { e.TestId, e.LecturerId }).HasName("PK__Lecturer__FEB201A97B1CFBC9");
+        modelBuilder.Entity<LecturerStudentAssignment>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("PK_LecturerStudentAssignment");
 
-            entity.ToTable("Lecturers_Tests_Detail");
+                entity.Property(e => e.Score)
+                .HasColumnName("score");
 
-            entity.Property(e => e.TestId).HasColumnName("test_id");
-            entity.Property(e => e.LecturerId).HasColumnName("lecturer_id");
-            entity.Property(e => e.IsGrading).HasColumnName("is_grading");
-            entity.Property(e => e.Reason).HasColumnName("reason");
-            entity.Property(e => e.Score).HasColumnName("score");
+                entity.Property(e => e.Reason)
+                    .HasMaxLength(500)
+                    .HasColumnName("reason");
 
-            entity.HasOne(d => d.Lecturer).WithMany(p => p.LecturersTestsDetails)
+                entity.Property(e => e.AssignedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("assigned_at");
+
+                entity.Property(e => e.IsReExam)
+                .HasDefaultValue(false)
+                .HasColumnName("is_re_exam");
+
+                entity.Property(e => e.IsFinal)
+                    .HasDefaultValue(false)
+                    .HasColumnName("is_final");
+
+                entity.HasOne(d => d.Lecturer)
+                .WithMany(p => p.LecturerStudentAssignments) // User cần có ICollection<LecturerStudentAssignment>
                 .HasForeignKey(d => d.LecturerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Lecturers__lectu__49C3F6B7");
+                .HasConstraintName("FK_LecturerStudentAssignment_Lecturer");
 
-            entity.HasOne(d => d.Test).WithMany(p => p.LecturersTestsDetails)
+                entity.HasOne(d => d.Student)
+                .WithMany(p => p.LecturerStudentAssignments) // Student cũng có ICollection<LecturerStudentAssignment>
+                .HasForeignKey(d => d.StudentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LecturerStudentAssignment_Student");
+
+                entity.HasOne(d => d.Test)
+                .WithMany(p => p.LecturerStudentAssignments) // Test cũng có ICollection<LecturerStudentAssignment>
                 .HasForeignKey(d => d.TestId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Lecturers__test___48CFD27E");
-        });
+                .HasConstraintName("FK_LecturerStudentAssignment_Test");
+            });
+        
 
         modelBuilder.Entity<Role>(entity =>
         {
@@ -93,6 +115,22 @@ public partial class Prn222TrackingToolContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<Students>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Students__3213E83F92C3D8B1");
+            entity.ToTable("Students");
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.StudentCode)
+                .HasDefaultValue(false)
+                .HasColumnName("student_code");
+            entity.Property(e => e.FullName)
+                .HasMaxLength(100)
+                .HasColumnName("fullname");
+            entity.Property(e => e.Email)
+                .HasMaxLength(100)
+                .HasColumnName("email");
         });
 
         modelBuilder.Entity<Test>(entity =>
@@ -112,7 +150,6 @@ public partial class Prn222TrackingToolContext : DbContext
             entity.Property(e => e.OriginalFilename)
                 .HasMaxLength(100)
                 .HasColumnName("original_filename");
-            entity.Property(e => e.Score).HasColumnName("score");
             entity.Property(e => e.StudentId).HasColumnName("student_id");
             entity.Property(e => e.Title)
                 .HasMaxLength(200)
@@ -122,27 +159,10 @@ public partial class Prn222TrackingToolContext : DbContext
                 .HasForeignKey(d => d.ExamId)
                 .HasConstraintName("FK__Tests__exam_id__45F365D3");
 
-            entity.HasOne(d => d.Student).WithMany(p => p.Tests)
-                .HasForeignKey(d => d.StudentId)
-                .HasConstraintName("FK__Tests__student_i__44FF419A");
-        });
-
-        modelBuilder.Entity<TestsScore>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Tests_Sc__3213E83F5C14E709");
-
-            entity.ToTable("Tests_Score");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.IsFinal)
-                .HasDefaultValue(false)
-                .HasColumnName("is_final");
-            entity.Property(e => e.Score).HasColumnName("score");
-            entity.Property(e => e.TestId).HasColumnName("test_id");
-
-            entity.HasOne(d => d.Test).WithMany(p => p.TestsScores)
-                .HasForeignKey(d => d.TestId)
-                .HasConstraintName("FK__Tests_Sco__test___4D94879B");
+            entity.HasOne(d => d.Student)
+            .WithOne(p => p.Test)   // sửa lại đây
+            .HasForeignKey<Test>(d => d.StudentId) // khóa ngoại nằm ở Test
+            .HasConstraintName("FK__Tests__student_id__44FF419A");
         });
 
         modelBuilder.Entity<User>(entity =>

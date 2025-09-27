@@ -19,7 +19,7 @@ namespace PRN222_TrackingTool.BusinessLayer.Mappings
                 Name = request.Name.Trim(),
                 Password = request.Password, // In real applications, hash the password
                 Email = request.Email,
-                RoleId = request.RoleId,
+                RoleId = (int)DataAccessLayer.Enums.Roles.Lecturer,
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true,
             };
@@ -33,7 +33,6 @@ namespace PRN222_TrackingTool.BusinessLayer.Mappings
                 Id = entity.Id,
                 Name = entity.Name,
                 Email = entity.Email,
-                RoleId = entity.RoleId ?? 0,
                 RoleName = entity.Role?.Name ?? string.Empty,
                 IsActive = entity.IsActive
             };

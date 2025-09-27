@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 
 namespace PRN222_TrackingTool.DataAccessLayer.Interfaces
 {
-    public interface IRoleRepository
+    public interface IRoleRepository : IGenericRepository<Role>
     {
-        Task<Role> GetByIdAsync(int id);
     }
 }

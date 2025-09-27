@@ -4,7 +4,9 @@ using Microsoft.IdentityModel.Tokens;
 using PRN222_TrackingTool.BusinessLayer.DTOs.Request;
 using PRN222_TrackingTool.BusinessLayer.DTOs.Response;
 using PRN222_TrackingTool.BusinessLayer.Interfaces;
+using PRN222_TrackingTool.BusinessLayer.Mappings;
 using PRN222_TrackingTool.DataAccessLayer.Entities;
+using PRN222_TrackingTool.DataAccessLayer.Enums;
 using PRN222_TrackingTool.DataAccessLayer.UnitOfWork;
 using System;
 using System.Collections.Generic;
@@ -297,19 +299,13 @@ namespace PRN222_TrackingTool.BusinessLayer.Services
                 };
 
             var hashed = BCrypt.Net.BCrypt.HashPassword(request.Password);
-            var user = new User
-            {
-                Email = request.Email,
-                Name = request.Name,
-                Password = hashed,
-                RoleId = request.RoleId,
-                CreatedAt = DateTime.UtcNow
-            };
+            request.Password = hashed;
+            var user = UserMapper.ToEntity(request);
             
             _unitOfWork.UserRepository.PrepareCreate(user);
             await _unitOfWork.SaveAsync();
             
-            var role = await _unitOfWork.RoleRepository.GetByIdAsync(user.RoleId.Value);
+            var role = await _unitOfWork.RoleRepository.GetByIdAsync((int)user.RoleId);
             if (role == null)
             {
                 return new AuthenticationResponse
