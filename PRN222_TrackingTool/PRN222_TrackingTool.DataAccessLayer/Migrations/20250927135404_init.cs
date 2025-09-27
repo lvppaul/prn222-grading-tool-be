@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PRN222_TrackingTool.DataAccessLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class ModifytableLecturerStudentAssignmentStudentsandDeleteLectureTestDetailTestScore : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -104,10 +104,16 @@ namespace PRN222_TrackingTool.DataAccessLayer.Migrations
                     student_id = table.Column<int>(type: "int", nullable: true),
                     exam_id = table.Column<int>(type: "int", nullable: true),
                     is_deleted = table.Column<bool>(type: "bit", nullable: true, defaultValue: false),
+                    UserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK__Tests__3213E83F8B8D01C8", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Tests_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK__Tests__exam_id__45F365D3",
                         column: x => x.exam_id,
@@ -186,6 +192,11 @@ namespace PRN222_TrackingTool.DataAccessLayer.Migrations
                 column: "student_id",
                 unique: true,
                 filter: "[student_id] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tests_UserId",
+                table: "Tests",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_role_id",
