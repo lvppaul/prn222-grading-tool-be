@@ -87,6 +87,7 @@ public partial class Prn222TrackingToolContext : DbContext
                 entity.HasOne(d => d.Lecturer)
                 .WithMany(p => p.LecturerStudentAssignments) // User cần có ICollection<LecturerStudentAssignment>
                 .HasForeignKey(d => d.LecturerId)
+                .HasPrincipalKey(u => u.Id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_LecturerStudentAssignment_Lecturer");
 
@@ -123,7 +124,7 @@ public partial class Prn222TrackingToolContext : DbContext
             entity.ToTable("Students");
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.StudentCode)
-                .HasDefaultValue(false)
+                .HasMaxLength(20)
                 .HasColumnName("student_code");
             entity.Property(e => e.FullName)
                 .HasMaxLength(100)

@@ -11,6 +11,7 @@ namespace PRN222_TrackingTool.DataAccessLayer.UnitOfWork
     {
         IUserRepository UserRepository { get; }
         IRoleRepository RoleRepository { get; }
+        IStudentRepository StudentRepository { get; }
         Task BeginTransactionAsync();
         Task CommitTransactionAsync();
         Task RollbackTransactionAsync();

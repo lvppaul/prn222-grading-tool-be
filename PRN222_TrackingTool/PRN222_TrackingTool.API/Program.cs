@@ -62,6 +62,7 @@ builder.Services.AddDbContext<Prn222TrackingToolContext>(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
