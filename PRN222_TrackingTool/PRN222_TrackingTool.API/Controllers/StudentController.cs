@@ -25,14 +25,43 @@ namespace PRN222_TrackingTool.API.Controllers
         [HttpGet("by-email")]
         public async Task<IActionResult> GetByEmail([FromQuery] string email)
         {
-            if (string.IsNullOrWhiteSpace(email))
-                return BadRequest(new { message = "Email is required" });
+            try
+            {
+                if (string.IsNullOrWhiteSpace(email))
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Email is required",
+                        Payload = null
+                    });
 
-            var students = await _studentService.GetStudentByEmailAsync(email);
-            if (students == null || students.Count == 0)
-                return NotFound(new { message = "No students found with that email" });
+                var students = await _studentService.GetStudentByEmailAsync(email);
+                if (students == null || students.Count == 0)
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "No students found with that email",
+                        Payload = null
+                    });
 
-            return Ok(students);
+                var result = students.Select(s => s.ToResponse()).ToList();
+                return Ok(new ApiResponse<List<StudentResponse>>
+                {
+                    Success = true,
+                    Message = "Students retrieved successfully",
+                    Payload = result
+                });
+            }
+            catch (Exception)
+            {
+                // Log exception here if needed
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "An error occurred while retrieving students by email",
+                    Payload = null
+                });
+            }
         }
 
         //[Authorize]
@@ -40,37 +69,112 @@ namespace PRN222_TrackingTool.API.Controllers
         [HttpGet("by-name")]
         public async Task<IActionResult> GetByName([FromQuery] string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                return BadRequest(new { message = "Name is required" });
+            try
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Name is required",
+                        Payload = null
+                    });
 
-            var students = await _studentService.GetStudentByName(name);
-            if (students == null || students.Count == 0)
-                return NotFound(new { message = "No students found with that name" });
+                var students = await _studentService.GetStudentByName(name);
+                if (students == null || students.Count == 0)
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "No students found with that name",
+                        Payload = null
+                    });
 
-            var result = students.Select(s => s.ToResponse()).ToList();
-
-            return Ok(result);
+                var result = students.Select(s => s.ToResponse()).ToList();
+                return Ok(new ApiResponse<List<StudentResponse>>
+                {
+                    Success = true,
+                    Message = "Students retrieved successfully",
+                    Payload = result
+                });
+            }
+            catch (Exception)
+            {
+                // Log exception here if needed
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "An error occurred while retrieving students by name",
+                    Payload = null
+                });
+            }
         }
 
-        //[Authorize]
-        [HttpGet]
+        [Authorize]
+        [HttpGet("GetAllStudent")]
         public async Task<IActionResult> GetAll()
         {
-            var students = await _studentService.GetAllAsync();
-            var result = students.Select(s => s.ToResponse()).ToList();
-            return Ok(result);
+            try
+            {
+                var students = await _studentService.GetAllAsync();
+                var result = students.Select(s => s.ToResponse()).ToList();
+                return Ok(new ApiResponse<List<StudentResponse>>
+                {
+                    Success = true,
+                    Message = "All students retrieved successfully",
+                    Payload = result
+                });
+            }
+            catch (Exception)
+            {
+                // Log exception here if needed
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "An error occurred while retrieving all students",
+                    Payload = null
+                });
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            if (id <= 0)
-                return BadRequest(new { message = "Invalid student ID" });
-            var student = await _studentService.GetByIdAsync(id);
-            if (student == null)
-                return NotFound(new { message = "Student not found" });
-            var result = student.ToResponse();
-            return Ok(result);
+            try
+            {
+                if (id <= 0)
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Invalid student ID",
+                        Payload = null
+                    });
+                    
+                var student = await _studentService.GetByIdAsync(id);
+                if (student == null)
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Student not found",
+                        Payload = null
+                    });
+                    
+                var result = student.ToResponse();
+                return Ok(new ApiResponse<StudentResponse>
+                {
+                    Success = true,
+                    Message = "Student retrieved successfully",
+                    Payload = result
+                });
+            }
+            catch (Exception)
+            {
+                // Log exception here if needed
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "An error occurred while retrieving student by ID",
+                    Payload = null
+                });
+            }
         }
     }
 }
