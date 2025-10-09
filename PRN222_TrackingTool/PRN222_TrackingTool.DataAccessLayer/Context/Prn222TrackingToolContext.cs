@@ -40,8 +40,8 @@ public partial class Prn222TrackingToolContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("code");
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
+                .HasDefaultValueSql("NOW()")
+                .HasColumnType("timestamp")
                 .HasColumnName("created_at");
             entity.Property(e => e.Duration).HasColumnName("duration");
             entity.Property(e => e.ExaminerId).HasColumnName("examiner_id");
@@ -72,8 +72,8 @@ public partial class Prn222TrackingToolContext : DbContext
                     .HasColumnName("reason");
 
                 entity.Property(e => e.AssignedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
+                .HasDefaultValueSql("NOW()")
+                .HasColumnType("timestamp")
                 .HasColumnName("assigned_at");
 
                 entity.Property(e => e.IsReExam)
@@ -172,14 +172,14 @@ public partial class Prn222TrackingToolContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
+                .HasDefaultValueSql("NOW()")
+                .HasColumnType("timestamp")
                 .HasColumnName("created_at");
             entity.Property(e => e.Email)
                 .HasMaxLength(255)
                 .HasColumnName("email");
             entity.Property(e => e.ExpiredRefreshToken)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("expired_refresh_token");
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true)
