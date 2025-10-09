@@ -39,11 +39,11 @@ namespace PRN222_TrackingTool.API.Controllers
 
                 if (response.Success)
                 {
-                    return Ok(new ApiResponse<AuthenticationResponse>
+                    return Ok(new ApiResponse<object>
                     {
                         Success = true,
                         Message = "Login successful.",
-                        Payload = response
+                        Payload = response.Data
                     });
                 }
                 else
@@ -150,11 +150,11 @@ namespace PRN222_TrackingTool.API.Controllers
                     });
                 }
 
-                return Ok(new ApiResponse<AuthenticationResponse>
+                return Ok(new ApiResponse<object>
                 {
                     Success = true,
                     Message = "Token refreshed successfully.",
-                    Payload = result
+                    Payload = result.Data
                 });
             }catch(Exception ex)
             {
