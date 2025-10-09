@@ -40,8 +40,8 @@ public partial class Prn222TrackingToolContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("code");
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
+                .HasDefaultValueSql("NOW()")
+                .HasColumnType("timestamp")
                 .HasColumnName("created_at");
             entity.Property(e => e.Duration).HasColumnName("duration");
             entity.Property(e => e.ExaminerId).HasColumnName("examiner_id");
@@ -72,8 +72,8 @@ public partial class Prn222TrackingToolContext : DbContext
                     .HasColumnName("reason");
 
                 entity.Property(e => e.AssignedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
+                .HasDefaultValueSql("NOW()")
+                .HasColumnType("timestamp")
                 .HasColumnName("assigned_at");
 
                 entity.Property(e => e.IsReExam)
@@ -87,6 +87,7 @@ public partial class Prn222TrackingToolContext : DbContext
                 entity.HasOne(d => d.Lecturer)
                 .WithMany(p => p.LecturerStudentAssignments) // User cần có ICollection<LecturerStudentAssignment>
                 .HasForeignKey(d => d.LecturerId)
+                .HasPrincipalKey(u => u.Id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_LecturerStudentAssignment_Lecturer");
 
@@ -123,7 +124,7 @@ public partial class Prn222TrackingToolContext : DbContext
             entity.ToTable("Students");
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.StudentCode)
-                .HasDefaultValue(false)
+                .HasMaxLength(20)
                 .HasColumnName("student_code");
             entity.Property(e => e.FullName)
                 .HasMaxLength(100)
@@ -171,14 +172,14 @@ public partial class Prn222TrackingToolContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
+                .HasDefaultValueSql("NOW()")
+                .HasColumnType("timestamp")
                 .HasColumnName("created_at");
             entity.Property(e => e.Email)
                 .HasMaxLength(255)
                 .HasColumnName("email");
             entity.Property(e => e.ExpiredRefreshToken)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("expired_refresh_token");
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true)

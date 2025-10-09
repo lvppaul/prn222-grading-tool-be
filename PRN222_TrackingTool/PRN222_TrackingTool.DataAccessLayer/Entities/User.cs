@@ -30,6 +30,4 @@ public partial class User
     public virtual ICollection<LecturerStudentAssignment> LecturerStudentAssignments { get; set; } = new List<LecturerStudentAssignment>();
 
     public virtual Role? Role { get; set; }
-
-    public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
 }

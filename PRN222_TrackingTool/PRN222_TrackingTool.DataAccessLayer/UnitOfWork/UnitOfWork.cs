@@ -16,7 +16,7 @@ namespace PRN222_TrackingTool.DataAccessLayer.UnitOfWork
         private IDbContextTransaction _transaction;
         private IUserRepository _userRepository;
         private IRoleRepository _roleRepository;
-
+        private IStudentRepository _studentRepository;
         public UnitOfWork(Prn222TrackingToolContext context)
         {
             _context = context;
@@ -30,6 +30,11 @@ namespace PRN222_TrackingTool.DataAccessLayer.UnitOfWork
         public IRoleRepository RoleRepository
         {
             get { return _roleRepository ??= new RoleRepository(_context); }
+        }
+
+        public IStudentRepository StudentRepository
+        {
+            get { return _studentRepository ??= new StudentRepository(_context); }
         }
 
         public async Task BeginTransactionAsync()
