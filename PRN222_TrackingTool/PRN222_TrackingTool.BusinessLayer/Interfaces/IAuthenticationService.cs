@@ -14,8 +14,6 @@ namespace PRN222_TrackingTool.BusinessLayer.Interfaces
     {
         string GenerateAccessToken(User user, string roleName);
         string GenerateRefreshToken();
-        Task<ClaimsPrincipal?> ValidateToken(string token);
-
         Task<AuthenticationResponse?> LoginAsync(LoginRequest request);
         Task<AuthenticationResponse?> RefreshTokenAsync(string refreshToken);
         Task<AuthenticationResponse?> RegisterAsync(UserRequest request);

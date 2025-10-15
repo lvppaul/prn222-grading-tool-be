@@ -171,21 +171,6 @@ namespace PRN222_TrackingTool.BusinessLayer.Services
                 };
             }
 
-            if(user.ExpiredRefreshToken <= DateTime.UtcNow)
-            {
-                user.RefreshToken = null;
-                user.ExpiredRefreshToken = null;
-
-                _unitOfWork.UserRepository.PrepareUpdate(user);
-                await _unitOfWork.SaveAsync();
-
-                return new AuthenticationResponse
-                {
-                    Success = true,
-                    Message = "Refresh token already expired"
-                };
-            }
-
             // Kiểm tra token hiện tại còn khớp không
             if (user.RefreshToken != request.RefreshToken)
             {
@@ -206,7 +191,7 @@ namespace PRN222_TrackingTool.BusinessLayer.Services
             return new AuthenticationResponse
             {
                 Success = true,
-                Message = "Logged out"
+                Message = "Logged out successfully"
             };
         }
 
@@ -272,39 +257,48 @@ namespace PRN222_TrackingTool.BusinessLayer.Services
 
         public async Task<AuthenticationResponse?> RegisterAsync(UserRequest request)
         {
-            // Validate input Null or Empty
             if (string.IsNullOrWhiteSpace(request.Email) ||
                 string.IsNullOrWhiteSpace(request.Password) ||
+                string.IsNullOrWhiteSpace(request.ConfirmPassword) ||
                 string.IsNullOrWhiteSpace(request.Name))
             {
                 return new AuthenticationResponse
                 {
                     Success = false,
-                    Message = "Email, password and name are required"
+                    Message = "Email, password, confirm password and name are required"
                 };
             }
 
-            // Validate password
+            if (request.Password != request.ConfirmPassword)
+            {
+                return new AuthenticationResponse
+                {
+                    Success = false,
+                    Message = "Password and Confirm Password do not match"
+                };
+            }
+
             var passwordCheck = ValidatePassword(request.Password);
             if (!passwordCheck.Success)
                 return passwordCheck;
 
-            // Check email exists
             var existing = await _unitOfWork.UserRepository.GetByEmailAsync(request.Email);
             if (existing != null)
+            {
                 return new AuthenticationResponse
                 {
                     Success = false,
                     Message = "Email already registered"
                 };
+            }
 
             var hashed = BCrypt.Net.BCrypt.HashPassword(request.Password);
-            request.Password = hashed;
+            request.Password = hashed; // lưu password đã hash vào request
             var user = UserMapper.ToEntity(request);
-            
+
             _unitOfWork.UserRepository.PrepareCreate(user);
             await _unitOfWork.SaveAsync();
-            
+
             var role = await _unitOfWork.RoleRepository.GetByIdAsync((int)user.RoleId);
             if (role == null)
             {
@@ -337,10 +331,6 @@ namespace PRN222_TrackingTool.BusinessLayer.Services
             };
         }
 
-        public Task<ClaimsPrincipal?> ValidateToken(string token)
-        {
-            throw new NotImplementedException();
-        }
 
         private AuthenticationResponse ValidatePassword(string password)
         {
